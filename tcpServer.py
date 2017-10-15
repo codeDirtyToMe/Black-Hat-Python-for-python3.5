@@ -27,7 +27,7 @@ while True :
     clientAddr = tuple()
     clientAddr = server.accept()
 
-    print("[*] Accepted connection from: %s:%d" % (addr[0], addr[1]))
+    print("[*] Accepted connection from: %s:%d" % (clientAddr[0], clientAddr[1]))
 
     #Spin up our client thread to handle incoming data.
     clientHandler = threading.Thread(target=handleClient,args=(clientAddr))
