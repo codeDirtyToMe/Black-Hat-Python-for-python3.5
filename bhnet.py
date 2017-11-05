@@ -42,13 +42,13 @@ def clientSender(buffer) :
                 if recvLength < int(4096) :
                     break
 
-            buffer = input(response) #Wait for more input.
-            buffer = buffer + "\n"
+            buffer = input(response.decode()) #Wait for more input.
+            buffer = buffer + "\r\n"
 
             client.send(buffer.encode()) #Send it off.
     except :
         print("[*] Exception! Exiting.")
-        client.close #Tear down the connection.
+        client.close() #Tear down the connection.
 
 #Run Command####################################################################################################
 def runCommand(command) :
@@ -59,6 +59,7 @@ def runCommand(command) :
     except :
         output = "Failed to execute command.\r\n"
 
+    output += "\r\n".encode()
     return output
 
 #Server Loop###################################################################################################
@@ -67,7 +68,7 @@ def serverLoop() :
     global target
     print("serverLoop")
     if target == None :
-        target = "0.0.0.0"
+        target = "0.0.0.0" #Listen on all interfaces.
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((target, port))
