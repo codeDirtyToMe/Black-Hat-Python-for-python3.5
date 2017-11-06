@@ -7,3 +7,5 @@ I've decided to go ahead and covert them to 3.5 as I make my way through the boo
 Liberties are being taken with certain conventions as I see fit, so some of the code may not seem all that
 familiar, but i do indend for all examples to function exactly the same as the book. These differences will
 be most obvious in the naming of variables and functions as I prefer camelCase. 
+
+Argument parsing is also very different.
