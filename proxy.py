@@ -1,10 +1,7 @@
 #!/usr/bin/python3.5
-#As of now, this is most definitely not gonna work. I've only just written it up.
-#I haven't even tried running it yet. I need to write my own hex dump function.
-#That'll end up being a seperate project that I'll need to finish before I can
-#come back and finish it.
+#As of now, this has barely been tested. Still working on some stuff.
 
-import sys, socket, threading
+import sys, socket, threading, binascii
 
 def serverLoop(localHost, localPort, remoteHost, remotePort, receiveStatus) :
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,8 +17,9 @@ def serverLoop(localHost, localPort, remoteHost, remotePort, receiveStatus) :
 
     server.listen(5)
     while True :
+        print("test")
         clientSocket, clientAddr = server.accept() #Multiple assignment.
-
+        print("test1")
         #Output local connection info.
         print("[*] Received incoming connection from %s:%d" %(clientAddr[0], clientAddr[1]))
 
@@ -51,8 +49,31 @@ def receiveFrom(connection) :
 
     return buffer
 
-def hexDump() : #I'm gonna write this myself instead of using what Justin Seitz used.
-    pass
+def hexDump(byteString) :
+    byteList = list(byteString.decode())
+    hexString = binascii.hexlify(byteString).decode()
+    testHexList = list(hexString)
+
+    doubleHexList = []
+    x = int(0)
+    while x is not len(testHexList):  # Combine the list into pairs of integers.
+        doubleHexList.insert(x, str(str(testHexList[x]) + str(testHexList[x + 1])))
+        x = x + 2
+
+    linesOfHex = float(len(doubleHexList) / int(16))
+    y = int(0)
+    z = int(0)
+    hexPad = " "
+    bitOffSet = int(0)
+    while y < linesOfHex:
+        bitOffSet = bitOffSet + len(doubleHexList[z:z + 16])
+        hexBitOffSet = hex(bitOffSet)
+        doubleHexString = " ".join(doubleHexList[z:z + 16])
+        if len(doubleHexString) < 47: hexPad = hexPad * (48 - len(doubleHexString))
+        print(str(hexBitOffSet) + " | " + str(doubleHexString) + str(hexPad) + " | " + str(
+            "".join(byteList[z:z + 16])))
+        y += 1
+        z += 16
 
 def responseHandler(buffer) :
     #Perform packet modifications.
@@ -129,11 +150,11 @@ def main() :
 
     #Setup local listening parameters.
     localHost = sys.argv[1]
-    localPort = sys.argv[2]
+    localPort = int(sys.argv[2])
 
     #Setup remote target parameters.
     remoteHost = sys.argv[3]
-    remotePort = sys.argv[4]
+    remotePort = int(sys.argv[4])
 
     #Decide on whether receiving data first or not.
     receiveStatus = sys.argv[5]
