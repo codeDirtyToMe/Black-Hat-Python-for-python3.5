@@ -1,4 +1,4 @@
-#/usr/bin/python3.5
+#!/usr/bin/python3.5
 #As of now, this is most definitely not gonna work. I've only just written it up.
 #I haven't even tried running it yet. I need to write my own hex dump function.
 #That'll end up being a seperate project that I'll need to finish before I can
