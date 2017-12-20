@@ -1,5 +1,6 @@
 #!/usr/bin/python3.5
-#As of now, this has barely been tested. Still working on some stuff.
+"""This might actually work now. There's something weird going on with iptables that's preventing it from 
+working on ubuntu."""
 
 import sys, socket, threading, binascii
 
@@ -13,18 +14,18 @@ def serverLoop(localHost, localPort, remoteHost, remotePort, receiveStatus) :
         print("[!!] Check other listening sockets or correct permissions")
         exit(1)
 
-    print("[*] Listening on %s:%d" %(localHost, localPort))
-
     server.listen(5)
+    print("[*] Listening on %s:%d" % (localHost, localPort))
+
     while True :
         print("test")
-        clientSocket, clientAddr = server.accept() #Multiple assignment.
+        client, addr = server.accept() #Multiple assignment.
         print("test1")
         #Output local connection info.
-        print("[*] Received incoming connection from %s:%d" %(clientAddr[0], clientAddr[1]))
+        print("[*] Received incoming connection from %s:%d" %(addr[0], addr[1]))
 
         #Start a thread to talk to the remote host.
-        proxyThread = threading.Thread(target=proxyHandler, args=(clientSocket, remoteHost, remotePort, receiveStatus))
+        proxyThread = threading.Thread(target=proxyHandler, args=(client, remoteHost, remotePort, receiveStatus))
 
         proxyThread.start()
 
@@ -52,12 +53,12 @@ def receiveFrom(connection) :
 def hexDump(byteString) :
     byteList = list(byteString.decode())
     hexString = binascii.hexlify(byteString).decode()
-    testHexList = list(hexString)
+    hexList = list(hexString)
 
     doubleHexList = []
     x = int(0)
-    while x is not len(testHexList):  # Combine the list into pairs of integers.
-        doubleHexList.insert(x, str(str(testHexList[x]) + str(testHexList[x + 1])))
+    while x is not len(hexList):  # Combine the list into pairs of integers.
+        doubleHexList.insert(x, str(str(hexList[x]) + str(hexList[x + 1])))
         x = x + 2
 
     linesOfHex = float(len(doubleHexList) / int(16))
@@ -85,13 +86,18 @@ def requestHandler(buffer) :
 
 def proxyHandler(clientSocket, remoteHost, remotePort, receiveStatus) :
     #Connect to the remote host.
+    print("test2")
     remoteSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("test3")
     remoteSocket.connect((remoteHost, remotePort))
 
     #Receive data from the remote end if necessary
 
-    if receiveStatus :
+    if receiveStatus is True :
         remoteBuffer = receiveFrom(remoteSocket)
+        print(remoteBuffer)
+        print(type(remoteBuffer))
+        exit(0)
         hexDump(remoteBuffer)
 
         #Send it to our response handler.
